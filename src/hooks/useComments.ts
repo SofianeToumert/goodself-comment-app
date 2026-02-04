@@ -1,6 +1,6 @@
 import { useContext, useCallback } from 'react';
 import { CommentsContext } from '../state';
-import type { CommentId } from '../types';
+import type { CommentId, UserVote } from '../types';
 
 export const useComments = () => {
   const context = useContext(CommentsContext);
@@ -42,6 +42,20 @@ export const useComments = () => {
     dispatch({ type: 'CLEAR_ALL' });
   }, [dispatch]);
 
+  const likeComment = useCallback(
+    (id: CommentId, previousVote: UserVote) => {
+      dispatch({ type: 'LIKE_COMMENT', payload: { id, previousVote } });
+    },
+    [dispatch]
+  );
+
+  const dislikeComment = useCallback(
+    (id: CommentId, previousVote: UserVote) => {
+      dispatch({ type: 'DISLIKE_COMMENT', payload: { id, previousVote } });
+    },
+    [dispatch]
+  );
+
   return {
     state,
     addComment,
@@ -49,5 +63,7 @@ export const useComments = () => {
     deleteComment,
     toggleCollapse,
     clearAll,
+    likeComment,
+    dislikeComment,
   };
 };

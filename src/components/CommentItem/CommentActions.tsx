@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion';
+import { Reply, X, Pencil, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 import styles from './CommentItem.module.css';
 
 type CommentActionsProps = {
@@ -8,6 +10,11 @@ type CommentActionsProps = {
   onEditClick: () => void;
   onDeleteClick: () => void;
   onCollapseClick: () => void;
+};
+
+const buttonVariants = {
+  tap: { scale: 0.9 },
+  hover: { scale: 1.1 },
 };
 
 export const CommentActions = ({
@@ -21,35 +28,58 @@ export const CommentActions = ({
 }: CommentActionsProps) => {
   return (
     <div className={styles.actions}>
-      <button
+      <motion.button
         type="button"
-        className={styles.actionButton}
+        className={styles.iconButton}
         onClick={onReplyClick}
+        variants={buttonVariants}
+        whileTap="tap"
+        whileHover="hover"
+        aria-label={isReplying ? 'Cancel reply' : 'Reply'}
+        title={isReplying ? 'Cancel' : 'Reply'}
       >
-        {isReplying ? 'Cancel' : 'Reply'}
-      </button>
-      <button
+        {isReplying ? <X size={16} /> : <Reply size={16} />}
+      </motion.button>
+
+      <motion.button
         type="button"
-        className={styles.actionButton}
+        className={styles.iconButton}
         onClick={onEditClick}
+        variants={buttonVariants}
+        whileTap="tap"
+        whileHover="hover"
+        aria-label="Edit"
+        title="Edit"
       >
-        Edit
-      </button>
-      <button
+        <Pencil size={16} />
+      </motion.button>
+
+      <motion.button
         type="button"
-        className={styles.actionButton}
+        className={`${styles.iconButton} ${styles.deleteButton}`}
         onClick={onDeleteClick}
+        variants={buttonVariants}
+        whileTap="tap"
+        whileHover="hover"
+        aria-label="Delete"
+        title="Delete"
       >
-        Delete
-      </button>
+        <Trash2 size={16} />
+      </motion.button>
+
       {hasChildren && (
-        <button
+        <motion.button
           type="button"
-          className={styles.actionButton}
+          className={styles.iconButton}
           onClick={onCollapseClick}
+          variants={buttonVariants}
+          whileTap="tap"
+          whileHover="hover"
+          aria-label={isCollapsed ? 'Expand replies' : 'Collapse replies'}
+          title={isCollapsed ? 'Expand' : 'Collapse'}
         >
-          {isCollapsed ? 'Expand' : 'Collapse'}
-        </button>
+          {isCollapsed ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
+        </motion.button>
       )}
     </div>
   );

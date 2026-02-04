@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useComments } from '../../hooks';
+import { useComments, useUserVotes } from '../../hooks';
 import { CommentForm } from '../CommentForm';
 import { CommentContent } from './CommentContent';
 import { CommentActions } from './CommentActions';
+import { LikeDislikeButtons } from './LikeDislikeButtons';
 import { CommentChildren } from './CommentChildren';
 import type { CommentId } from '../../types';
 import styles from './CommentItem.module.css';
@@ -14,8 +15,16 @@ type CommentItemProps = {
 };
 
 export const CommentItem = ({ id, depth = 0 }: CommentItemProps) => {
-  const { state, editComment, deleteComment, toggleCollapse, addComment } =
-    useComments();
+  const {
+    state,
+    editComment,
+    deleteComment,
+    toggleCollapse,
+    addComment,
+    likeComment,
+    dislikeComment,
+  } = useComments();
+  const { getVote, setVote } = useUserVotes();
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -23,6 +32,7 @@ export const CommentItem = ({ id, depth = 0 }: CommentItemProps) => {
   if (!comment) return null;
 
   const hasChildren = comment.childIds.length > 0;
+  const userVote = getVote(id);
 
   const handleReply = (text: string) => {
     addComment(id, text);
@@ -38,6 +48,16 @@ export const CommentItem = ({ id, depth = 0 }: CommentItemProps) => {
     if (window.confirm('Delete this comment and all replies?')) {
       deleteComment(id);
     }
+  };
+
+  const handleLike = () => {
+    likeComment(id, userVote);
+    setVote(id, userVote === 'like' ? null : 'like');
+  };
+
+  const handleDislike = () => {
+    dislikeComment(id, userVote);
+    setVote(id, userVote === 'dislike' ? null : 'dislike');
   };
 
   return (
@@ -58,15 +78,24 @@ export const CommentItem = ({ id, depth = 0 }: CommentItemProps) => {
               createdAt={comment.createdAt}
               isEdited={!!comment.updatedAt}
             />
-            <CommentActions
-              isReplying={isReplying}
-              hasChildren={hasChildren}
-              isCollapsed={!!comment.isCollapsed}
-              onReplyClick={() => setIsReplying(!isReplying)}
-              onEditClick={() => setIsEditing(true)}
-              onDeleteClick={handleDelete}
-              onCollapseClick={() => toggleCollapse(id)}
-            />
+            <div className={styles.actionsRow}>
+              <LikeDislikeButtons
+                likes={comment.likes ?? 0}
+                dislikes={comment.dislikes ?? 0}
+                userVote={userVote}
+                onLike={handleLike}
+                onDislike={handleDislike}
+              />
+              <CommentActions
+                isReplying={isReplying}
+                hasChildren={hasChildren}
+                isCollapsed={!!comment.isCollapsed}
+                onReplyClick={() => setIsReplying(!isReplying)}
+                onEditClick={() => setIsEditing(true)}
+                onDeleteClick={handleDelete}
+                onCollapseClick={() => toggleCollapse(id)}
+              />
+            </div>
           </>
         )}
       </div>

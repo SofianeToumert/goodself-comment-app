@@ -8,7 +8,12 @@ export type CommentNode = {
   updatedAt?: number;
   childIds: CommentId[];
   isCollapsed?: boolean;
+  likes: number;
+  dislikes: number;
 };
+
+export type UserVote = 'like' | 'dislike' | null;
+export type UserVotes = Record<CommentId, UserVote>;
 
 export type CommentsState = {
   byId: Record<CommentId, CommentNode>;
@@ -33,10 +38,22 @@ export type ToggleCollapsePayload = {
   id: CommentId;
 };
 
+export type LikeCommentPayload = {
+  id: CommentId;
+  previousVote: UserVote;
+};
+
+export type DislikeCommentPayload = {
+  id: CommentId;
+  previousVote: UserVote;
+};
+
 export type Action =
   | { type: 'ADD_COMMENT'; payload: AddCommentPayload }
   | { type: 'EDIT_COMMENT'; payload: EditCommentPayload }
   | { type: 'DELETE_COMMENT'; payload: DeleteCommentPayload }
   | { type: 'TOGGLE_COLLAPSE'; payload: ToggleCollapsePayload }
+  | { type: 'LIKE_COMMENT'; payload: LikeCommentPayload }
+  | { type: 'DISLIKE_COMMENT'; payload: DislikeCommentPayload }
   | { type: 'CLEAR_ALL' }
   | { type: 'HYDRATE'; payload: CommentsState };
