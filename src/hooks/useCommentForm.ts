@@ -1,3 +1,9 @@
+/**
+ * Hook for managing comment form state and interactions.
+ * Handles validation, character counting, and keyboard shortcuts.
+ * @module hooks/useCommentForm
+ */
+
 import {
   useState,
   useRef,
@@ -12,35 +18,78 @@ import {
   isNearLimit,
 } from '../services';
 
+/**
+ * Configuration options for the useCommentForm hook.
+ */
 type UseCommentFormOptions = {
+  /** Initial text to populate the form with (default: '') */
   initialText?: string;
+  /** Whether to auto-focus the textarea on mount (default: false) */
   autoFocus?: boolean;
+  /** Callback invoked when form is submitted with valid text */
   onSubmit: (text: string) => void;
+  /** Optional callback invoked when form is cancelled (Escape key) */
   onCancel?: () => void;
 };
 
+/**
+ * Return type for the useCommentForm hook.
+ */
 type UseCommentFormReturn = {
-  // State
+  /** Current text value */
   text: string;
+  /** Function to update the text value */
   setText: (text: string) => void;
-
-  // Validation
+  /** Whether the current text passes validation */
   isValid: boolean;
+  /** Array of validation error messages */
   errors: string[];
+  /** Whether the text is empty (after trimming) */
   isEmpty: boolean;
-
-  // Character count
+  /** Number of characters remaining before limit */
   remaining: number;
+  /** Whether to show the character limit warning */
   showWarning: boolean;
-
-  // Refs
+  /** Ref to attach to the textarea element */
   textareaRef: RefObject<HTMLTextAreaElement>;
-
-  // Handlers
+  /** Handler for form submission */
   handleSubmit: () => void;
+  /** Handler for keyboard events (Enter to submit, Escape to cancel) */
   handleKeyDown: (e: KeyboardEvent<HTMLTextAreaElement>) => void;
 };
 
+/**
+ * Hook for managing comment form logic including validation and submission.
+ * Provides text state, validation results, and event handlers.
+ *
+ * @param options - Configuration options for the form
+ * @returns Object containing form state and handlers
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   text,
+ *   setText,
+ *   isValid,
+ *   remaining,
+ *   handleSubmit,
+ *   handleKeyDown,
+ *   textareaRef,
+ * } = useCommentForm({
+ *   onSubmit: (text) => addComment(null, text),
+ *   autoFocus: true,
+ * });
+ *
+ * return (
+ *   <textarea
+ *     ref={textareaRef}
+ *     value={text}
+ *     onChange={(e) => setText(e.target.value)}
+ *     onKeyDown={handleKeyDown}
+ *   />
+ * );
+ * ```
+ */
 export const useCommentForm = ({
   initialText = '',
   autoFocus = false,
