@@ -40,7 +40,7 @@ const App = () => (
   <CommentsProvider>
     <ModalProvider>
       <main className={styles.container}>
-        <h1 className={styles.title}>Comment and feel good about yourself 😉</h1>
+        <h1 className={styles.title}>Comment and feel Good about yourSelf 😉</h1>
         <ErrorBoundary>
           <CommentList />
         </ErrorBoundary>
