@@ -10,6 +10,7 @@ type VoteButtonProps = {
   isActive: boolean;
   onClick: () => void;
   label: string;
+  variant?: 'like' | 'dislike';
 };
 
 export const VoteButton = memo(function VoteButton({
@@ -18,10 +19,12 @@ export const VoteButton = memo(function VoteButton({
   isActive,
   onClick,
   label,
+  variant = 'like',
 }: VoteButtonProps) {
+  const activeClass = variant === 'dislike' ? styles.voteActiveDislike : styles.voteActive;
   return (
     <MotionIconButton
-      className={`${styles.voteButton} ${isActive ? styles.voteActive : ''}`}
+      className={`${styles.voteButton} ${isActive ? activeClass : ''}`}
       onClick={onClick}
       hoverScale={1.05}
       label={`${label} this comment. Current ${label.toLowerCase()}s: ${count}`}

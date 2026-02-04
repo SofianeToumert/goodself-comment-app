@@ -114,6 +114,14 @@
   color: var(--color-primary);
 }
 
+.voteActiveDislike {
+  color: var(--color-danger);
+}
+
+.voteActiveDislike:hover {
+  color: var(--color-danger);
+}
+
 .voteCount {
   font-size: 0.8rem;
   min-width: 1ch;

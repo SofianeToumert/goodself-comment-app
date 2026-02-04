@@ -34,6 +34,7 @@ export const LikeDislikeButtons = memo(function LikeDislikeButtons({
         isActive={userVote === 'dislike'}
         onClick={onDislike}
         label="Dislike"
+        variant="dislike"
       />
     </div>
   );
