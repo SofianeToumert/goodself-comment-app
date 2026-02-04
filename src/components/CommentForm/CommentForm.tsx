@@ -1,10 +1,5 @@
-import { useState, useRef, useEffect, type KeyboardEvent } from 'react';
-import {
-  validateCommentText,
-  getRemainingCharacters,
-  isNearLimit,
-  COMMENT_MAX_LENGTH,
-} from '../../services';
+import { useCommentForm } from '../../hooks';
+import { COMMENT_MAX_LENGTH } from '../../services';
 import styles from './CommentForm.module.css';
 
 type CommentFormProps = {
@@ -24,37 +19,23 @@ export const CommentForm = ({
   initialText = '',
   autoFocus = false,
 }: CommentFormProps) => {
-  const [text, setText] = useState<string>(initialText);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const { isValid, errors } = validateCommentText(text);
-  const remaining = getRemainingCharacters(text);
-  const showWarning = isNearLimit(text);
-  const isEmpty = text.trim().length === 0;
-
-  useEffect(() => {
-    if (autoFocus && textareaRef.current) {
-      textareaRef.current.focus();
-    }
-  }, [autoFocus]);
-
-  const handleSubmit = () => {
-    const trimmed = text.trim();
-    if (trimmed && isValid) {
-      onSubmit(trimmed);
-      setText('');
-    }
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-    if (e.key === 'Escape' && onCancel) {
-      onCancel();
-    }
-  };
+  const {
+    text,
+    setText,
+    isValid,
+    errors,
+    isEmpty,
+    remaining,
+    showWarning,
+    textareaRef,
+    handleSubmit,
+    handleKeyDown,
+  } = useCommentForm({
+    initialText,
+    autoFocus,
+    onSubmit,
+    onCancel,
+  });
 
   return (
     <div className={styles.form}>
