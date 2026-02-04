@@ -93,6 +93,7 @@ export const useCommentItem = (id: CommentId): UseCommentItemReturn => {
     (e: KeyboardEvent) => {
       if (e.key === 'Enter' && !e.shiftKey && !isEditing && !isReplying) {
         e.preventDefault();
+        e.stopPropagation();
         setIsReplying(true);
       }
     },

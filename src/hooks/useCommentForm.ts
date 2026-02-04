@@ -75,6 +75,7 @@ export const useCommentForm = ({
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
+        e.stopPropagation();
         handleSubmit();
       }
       if (e.key === 'Escape' && onCancel) {
