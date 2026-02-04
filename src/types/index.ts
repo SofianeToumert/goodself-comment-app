@@ -55,5 +55,4 @@ export type Action =
   | { type: 'TOGGLE_COLLAPSE'; payload: ToggleCollapsePayload }
   | { type: 'LIKE_COMMENT'; payload: LikeCommentPayload }
   | { type: 'DISLIKE_COMMENT'; payload: DislikeCommentPayload }
-  | { type: 'CLEAR_ALL' }
-  | { type: 'HYDRATE'; payload: CommentsState };
+  | { type: 'CLEAR_ALL' };

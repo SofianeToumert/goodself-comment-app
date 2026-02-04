@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useComments, useUserVotes } from '../../hooks';
+import { memo } from 'react';
+import { useCommentItem } from '../../hooks';
 import { CommentForm } from '../CommentForm';
 import { CommentContent } from './CommentContent';
 import { CommentActions } from './CommentActions';
 import { LikeDislikeButtons } from './LikeDislikeButtons';
 import { CommentChildren } from './CommentChildren';
+import { ReplyFormSection } from './ReplyFormSection';
 import type { CommentId } from '../../types';
 import styles from './CommentItem.module.css';
 
@@ -14,55 +14,43 @@ type CommentItemProps = {
   depth?: number;
 };
 
-export const CommentItem = ({ id, depth = 0 }: CommentItemProps) => {
+export const CommentItem = memo(function CommentItem({
+  id,
+  depth = 0,
+}: CommentItemProps) {
   const {
-    state,
-    editComment,
-    deleteComment,
-    toggleCollapse,
-    addComment,
-    likeComment,
-    dislikeComment,
-  } = useComments();
-  const { getVote, setVote } = useUserVotes();
-  const [isReplying, setIsReplying] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+    comment,
+    userVote,
+    hasChildren,
+    isReplying,
+    isEditing,
+    setIsReplying,
+    setIsEditing,
+    handleReply,
+    handleEdit,
+    handleDeleteClick,
+    handleLike,
+    handleDislike,
+    handleKeyDown,
+    handleToggleCollapse,
+  } = useCommentItem(id);
 
-  const comment = state.byId[id];
   if (!comment) return null;
 
-  const hasChildren = comment.childIds.length > 0;
-  const userVote = getVote(id);
-
-  const handleReply = (text: string) => {
-    addComment(id, text);
-    setIsReplying(false);
-  };
-
-  const handleEdit = (text: string) => {
-    editComment(id, text);
-    setIsEditing(false);
-  };
-
-  const handleDelete = () => {
-    if (window.confirm('Delete this comment and all replies?')) {
-      deleteComment(id);
-    }
-  };
-
-  const handleLike = () => {
-    likeComment(id, userVote);
-    setVote(id, userVote === 'like' ? null : 'like');
-  };
-
-  const handleDislike = () => {
-    dislikeComment(id, userVote);
-    setVote(id, userVote === 'dislike' ? null : 'dislike');
-  };
-
   return (
-    <div className={styles.item} style={{ marginLeft: depth > 0 ? 24 : 0 }}>
-      <div className={styles.content}>
+    <article
+      className={styles.item}
+      style={{ marginLeft: depth > 0 ? 24 : 0 }}
+      role="article"
+      aria-labelledby={`comment-${id}-content`}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+    >
+      <div
+        className={styles.content}
+        aria-expanded={hasChildren ? !comment.isCollapsed : undefined}
+        aria-controls={hasChildren ? `comment-${id}-children` : undefined}
+      >
         {isEditing ? (
           <CommentForm
             initialText={comment.text}
@@ -74,6 +62,7 @@ export const CommentItem = ({ id, depth = 0 }: CommentItemProps) => {
         ) : (
           <>
             <CommentContent
+              id={`comment-${id}-content`}
               text={comment.text}
               createdAt={comment.createdAt}
               isEdited={!!comment.updatedAt}
@@ -92,39 +81,29 @@ export const CommentItem = ({ id, depth = 0 }: CommentItemProps) => {
                 isCollapsed={!!comment.isCollapsed}
                 onReplyClick={() => setIsReplying(!isReplying)}
                 onEditClick={() => setIsEditing(true)}
-                onDeleteClick={handleDelete}
-                onCollapseClick={() => toggleCollapse(id)}
+                onDeleteClick={handleDeleteClick}
+                onCollapseClick={handleToggleCollapse}
               />
             </div>
           </>
         )}
       </div>
 
-      <AnimatePresence initial={false}>
-        {isReplying && (
-          <motion.div
-            className={styles.replyForm}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-          >
-            <CommentForm
-              placeholder="Write a reply..."
-              submitLabel="Reply"
-              onSubmit={handleReply}
-              onCancel={() => setIsReplying(false)}
-              autoFocus
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <CommentChildren
-        childIds={comment.childIds}
-        isCollapsed={!!comment.isCollapsed}
-        depth={depth}
+      <ReplyFormSection
+        isVisible={isReplying}
+        onSubmit={handleReply}
+        onCancel={() => setIsReplying(false)}
       />
-    </div>
+
+      {hasChildren && (
+        <div id={`comment-${id}-children`} role="group" aria-label="Replies">
+          <CommentChildren
+            childIds={comment.childIds}
+            isCollapsed={!!comment.isCollapsed}
+            depth={depth}
+          />
+        </div>
+      )}
+    </article>
   );
-};
+});

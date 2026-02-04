@@ -1,9 +1,10 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { CommentsProvider } from './state';
+import { CommentsProvider, ModalProvider } from './state';
 import { useComments } from './hooks';
 import { CommentForm } from './components/CommentForm';
 import { CommentItem } from './components/CommentItem';
 import { ClearAllButton } from './components/ClearAllButton';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import styles from './App.module.css';
 
 const CommentList = () => {
@@ -15,7 +16,7 @@ const CommentList = () => {
         placeholder="Enter new comment here"
         onSubmit={(text) => addComment(null, text)}
       />
-      <div className={styles.list}>
+      <div className={styles.list} role="feed" aria-label="Comments">
         <AnimatePresence initial={false}>
           {state.rootIds.map((id) => (
             <motion.div
@@ -37,10 +38,14 @@ const CommentList = () => {
 
 const App = () => (
   <CommentsProvider>
-    <main className={styles.container}>
-      <h1 className={styles.title}>COMMENTS</h1>
-      <CommentList />
-    </main>
+    <ModalProvider>
+      <main className={styles.container}>
+        <h1 className={styles.title}>COMMENTS</h1>
+        <ErrorBoundary>
+          <CommentList />
+        </ErrorBoundary>
+      </main>
+    </ModalProvider>
   </CommentsProvider>
 );
 

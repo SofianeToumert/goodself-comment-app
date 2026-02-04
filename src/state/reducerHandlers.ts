@@ -201,17 +201,3 @@ export const handleDislikeComment = (
   };
 };
 
-export const handleHydrate = (payload: CommentsState): CommentsState => {
-  // Migrate existing comments without vote counts
-  const migratedById = { ...payload.byId };
-  for (const id of Object.keys(migratedById)) {
-    const node = migratedById[id];
-    if (node.likes === undefined) {
-      migratedById[id] = { ...node, likes: 0, dislikes: 0 };
-    }
-  }
-  return {
-    ...payload,
-    byId: migratedById,
-  };
-};

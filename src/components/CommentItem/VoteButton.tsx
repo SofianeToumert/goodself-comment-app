@@ -1,5 +1,7 @@
+import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
+import { MotionIconButton } from '../shared';
 import styles from './CommentItem.module.css';
 
 type VoteButtonProps = {
@@ -10,25 +12,22 @@ type VoteButtonProps = {
   label: string;
 };
 
-export const VoteButton = ({
+export const VoteButton = memo(function VoteButton({
   icon: Icon,
   count,
   isActive,
   onClick,
   label,
-}: VoteButtonProps) => {
+}: VoteButtonProps) {
   return (
-    <motion.button
-      type="button"
+    <MotionIconButton
       className={`${styles.voteButton} ${isActive ? styles.voteActive : ''}`}
       onClick={onClick}
-      whileTap={{ scale: 0.9 }}
-      whileHover={{ scale: 1.05 }}
-      aria-label={`${label} (${count})`}
-      aria-pressed={isActive}
-      title={label}
+      hoverScale={1.05}
+      label={`${label} this comment. Current ${label.toLowerCase()}s: ${count}`}
+      pressed={isActive}
     >
-      <Icon size={16} />
+      <Icon size={16} aria-hidden="true" />
       <AnimatePresence mode="wait">
         <motion.span
           key={count}
@@ -37,10 +36,11 @@ export const VoteButton = ({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 10, opacity: 0 }}
           transition={{ duration: 0.15 }}
+          aria-hidden="true"
         >
           {count}
         </motion.span>
       </AnimatePresence>
-    </motion.button>
+    </MotionIconButton>
   );
-};
+});

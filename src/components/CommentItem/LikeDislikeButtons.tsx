@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import type { UserVote } from '../../types';
 import { VoteButton } from './VoteButton';
@@ -11,15 +12,15 @@ type LikeDislikeButtonsProps = {
   onDislike: () => void;
 };
 
-export const LikeDislikeButtons = ({
+export const LikeDislikeButtons = memo(function LikeDislikeButtons({
   likes,
   dislikes,
   userVote,
   onLike,
   onDislike,
-}: LikeDislikeButtonsProps) => {
+}: LikeDislikeButtonsProps) {
   return (
-    <div className={styles.voteButtons}>
+    <div className={styles.voteButtons} role="group" aria-label="Vote on this comment">
       <VoteButton
         icon={ThumbsUp}
         count={likes}
@@ -36,4 +37,4 @@ export const LikeDislikeButtons = ({
       />
     </div>
   );
-};
+});

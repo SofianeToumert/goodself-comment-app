@@ -7,7 +7,6 @@ import {
   handleClearAll,
   handleLikeComment,
   handleDislikeComment,
-  handleHydrate,
 } from './reducerHandlers';
 
 export const initialState: CommentsState = {
@@ -34,8 +33,6 @@ export const commentsReducer = (
       return handleLikeComment(state, action.payload);
     case 'DISLIKE_COMMENT':
       return handleDislikeComment(state, action.payload);
-    case 'HYDRATE':
-      return handleHydrate(action.payload);
     default:
       return state;
   }
